@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17.4-alpine
+    environment:
+      - POSTGRES_USER=${ROAD_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${ROAD_POSTGRES_PWD}
+      - POSTGRES_DB=${ROAD_POSTGRES_DATABASE}
+      - POSTGRES_PORT=${ROAD_POSTGRES_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${ROAD_POSTGRES_PORT}:${ROAD_POSTGRES_PORT}
+    expose:
+      - ${ROAD_POSTGRES_PORT}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "${ROAD_POSTGRES_DATABASE}",
+          "-U",
+          "${ROAD_POSTGRES_USER}",
+        ]
+      timeout: 40s
+      interval: 2s
+      retries: 20
+
+volumes:
+  postgres_data:
